@@ -6,12 +6,10 @@
 
 
 import java.io.*;
-
 import java.net.*;
 
 public class Client{
 
-	
 	private Socket socket = null;
 	private DataInputStream input = null;
 	private DataOutputStream out = null;
@@ -23,9 +21,9 @@ public class Client{
 			socket = new Socket (address, port);
 			System.out.println("Connected");
 			
-			input = new DataInputStream(System.in);
+			input = new DataInputStream(System.in); // whatever the client is typing
 			
-			out = new DataOutputStream(socket.getOutputStream());
+			out = new DataOutputStream(socket.getOutputStream()); // sends out client's input
 		
 		}
 			
@@ -67,8 +65,9 @@ public class Client{
 	
 	public static void main(String args[]) {
         // start the client
-		
-		Client client = new Client ("127.0.0.1", 5000);
-	}
+		// Client client2 = new Client 
+		Client client = new Client ("127.0.0.1", 5000); // Definatly change ip address but add more stuff maybe.
+	}	// First try on local host for them to talk to each other then extend to over
+		// the real netweork.
 
 }

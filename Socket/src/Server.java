@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
-
+// client to client messaging app. The server would be the middle man between them.
+// Server would store the input from ClientA and forwards it to ClientB and vise versa.
 public class Server{
 	
 	private Socket socket = null;
@@ -10,17 +11,20 @@ public class Server{
 	public Server(int port) {
 		
 		try {
-			server = new ServerSocket(port);
+			server = new ServerSocket(port); //Listen for connections
 			
 			System.out.println("Server started");
 			
 			System.out.println("Waiting for a client ...");
 		
-			socket = server.accept();
+			socket = server.accept();	//Call this method and only accept the connection when
+										//port # is valid. If not throws an exception. 
 			System.out.println("Client accepted");
 			
+			// Store buffered incoming data
 			in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 			
+			// Store input to print it out
 			String line = "";
 			
 			
@@ -29,8 +33,10 @@ public class Server{
 			while (!line.equals("Over")) {
 				
 				try {
-					
+					// Store 'in' value
 					line = in.readUTF();
+					
+					// We will modify the println to send data to other client
 					System.out.println(line);
 				}
 				catch(IOException i) {
@@ -51,7 +57,7 @@ public class Server{
 
 	public static void main(String[] args) {
 		// start the server
-		Server server = new Server(5000);
+		Server server = new Server(5000); //port number doesn't have to be 5000
 		
 	}
 	

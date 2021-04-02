@@ -25,7 +25,7 @@ public class Server{
 			System.out.println("Server started");
 			
 			
-			while(clientList.size() < 2) { //search for more clients as long as we aren't above max capacity
+			while(clientList.size() < 100) { //search for more clients as long as we aren't above max capacity
 				//we can raise the number of max clients if we want
 			
 				System.out.println("Waiting for a client ...");
@@ -39,8 +39,8 @@ public class Server{
 				// Store buffered incoming data
 				in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 				out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-				out.writeUTF("");
-				in.readUTF();
+//				out.writeUTF("");
+//				in.readUTF();
 				
 				ServerThread newClient = new ServerThread(socket, counter, in, out);
 				

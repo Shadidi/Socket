@@ -18,12 +18,14 @@ public class ServerThread implements Runnable{
     public void run() {
         String line = "";
         while (!line.equals(Server.exitWord)) {
+        	
         		//System.out.println("Open"); //This is just a debugging message to check if the server is running
 			try {
 					// Store 'in' value
-				line = in.readUTF();
+				line = in.readUTF(); 
 				System.out.println(line);
-				out.writeUTF(line);
+//				out.writeUTF(line);
+				
 				
 				/*for (ServerThread client : Server.clientList){ 
 					client.out.writeUTF(line);

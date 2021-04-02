@@ -1,9 +1,3 @@
-// client representing another device 
-// trying to play the same audio to from its speaker
-// to demonstrate a distributed system of more than one device 
-// playing the same audio file. The access to more resource 
-// would be the additional speaker/s.
-
 
 import java.io.*;
 import java.net.*;
@@ -14,6 +8,7 @@ public class Client{
 	private DataInputStream input = null;
 	private DataOutputStream out = null;
 	private String username = "";
+	private boolean sent = false; //checks if the message was sent yet, important for the while loop
 	
 	
 	public Client(String address, int port) {
@@ -98,30 +93,73 @@ public class Client{
             @Override
             public void run() { 
             	String line = "";
+            	
             	while (!line.equals(Server.exitWord)) {
         			try {
-        				line = input.readLine();
-        				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
-        				out.writeUTF(line);
+	        				line = input.readLine();
+	        				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
+	        				out.writeUTF(line);
+	        				sent = true;
         			}
         			catch(IOException i) {
         				System.out.println(i);
         			}
+        			try { 
+                        // read the message sent to this client 
+                        line = input.readUTF(); 
+                        System.out.println(line); 
+                    } 
+                    catch (IOException e) { 
+  
+                        e.printStackTrace(); 
+                    }
+        			
+        			if(line.equals(Server.exitWord)){
+        				break;
+        			}
         		}
-        		
+            	System.out.println("left");
         		try {
         			input.close();
         			out.close();
         			socket.close();
+        			System.out.println("closed");
         		}
         		catch(IOException i){
         			System.out.println(i);
         		}
             } 
         }); 
-		
-		send.start();
-		read.start();
+		line = "";
+    	
+    
+			try {
+				while (!line.equals(Server.exitWord)) {
+					System.out.println(1); 
+	    				line = input.readLine();
+	    				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
+	    				out.writeUTF(line);
+	    				System.out.println(2); 
+	    				
+	    				read.start();
+	    				System.out.println(3);
+					}
+			}
+			catch(IOException i) {
+				System.out.println(i);
+			}
+			try { 
+                // read the message sent to this client 
+                line = input.readUTF(); 
+                System.out.println(line); 
+            } 
+            catch (IOException e) { 
+
+                e.printStackTrace(); 
+            }
+    	
+		System.out.println("thread done");
+		//read.start();
 	}
 		
 	public static void main(String args[]) {

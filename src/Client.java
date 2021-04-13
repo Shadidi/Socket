@@ -1,6 +1,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class Client{
 
@@ -8,7 +9,8 @@ public class Client{
 	private DataInputStream input = null;
 	private DataOutputStream out = null;
 	private String username = "";
-	private boolean sent = false; //checks if the message was sent yet, important for the while loop
+	private Scanner scan;
+
 	
 	
 	public Client(String address, int port) {
@@ -17,9 +19,10 @@ public class Client{
 			
 			System.out.println("Enter your name: ");	//if they enter nothing they get represented by their IP
 			username = "[" + address + "]";
-			input = new DataInputStream(System.in); // whatever the client is typing
+			
+			scan = new Scanner(System.in); //the scanner to take our input
 
-			String name = input.readLine();
+			String name = scan.nextLine();
 			if (!name.equals("")) {
 				username = "[" + name + "]";
 			}
@@ -28,6 +31,7 @@ public class Client{
 			
 			System.out.println("Connected");
 			
+			input = new DataInputStream(socket.getInputStream()); 
 			out = new DataOutputStream(socket.getOutputStream()); // sends out client's input
 			out.writeUTF("<<" + username + " HAS JOINED THE CHAT>>"); //This is sent to nobody, but server needs a message before it accepts more clients
 		
@@ -41,34 +45,7 @@ public class Client{
 		}
 		
 		String line = "";
-		//send.start();  //The main issue: Only the 1st message sends. Based on debugging println the issue is in client. Server keeps listening it seems
 		
-		
-		/*while (!line.equals(Server.exitWord)) {
-			
-			try {
-				
-				line = input.readLine();
-				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
-				out.writeUTF(line);
-			}
-			catch(IOException i) {
-				System.out.println(i);
-			}
-		}
-		
-		try {
-			input.close();
-			out.close();
-			socket.close();
-			
-		}
-		catch(IOException i){
-		
-			System.out.println(i);
-		}
-		
-	}*/ //original code, just in case
 	
 		Thread read = new Thread(new Runnable()  { 
             @Override
@@ -96,32 +73,19 @@ public class Client{
             	
             	while (!line.equals(Server.exitWord)) {
         			try {
-	        				line = input.readLine();
+	        				line = scan.nextLine();
 	        				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
 	        				out.writeUTF(line);
-	        				sent = true;
         			}
         			catch(IOException i) {
         				System.out.println(i);
-        			}
-        			try { 
-                        // read the message sent to this client 
-                        line = input.readUTF(); 
-                        System.out.println(line); 
-                    } 
-                    catch (IOException e) { 
-  
-                        e.printStackTrace(); 
-                    }
-        			
-        			if(line.equals(Server.exitWord)){
-        				break;
         			}
         		}
             	System.out.println("left");
         		try {
         			input.close();
         			out.close();
+        			scan.close();
         			socket.close();
         			System.out.println("closed");
         		}
@@ -131,35 +95,9 @@ public class Client{
             } 
         }); 
 		line = "";
+		send.start();
+    	read.start();
     	
-    
-			try {
-				while (!line.equals(Server.exitWord)) {
-					System.out.println(1); 
-	    				line = input.readLine();
-	    				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
-	    				out.writeUTF(line);
-	    				System.out.println(2); 
-	    				
-	    				read.start();
-	    				System.out.println(3);
-					}
-			}
-			catch(IOException i) {
-				System.out.println(i);
-			}
-			try { 
-                // read the message sent to this client 
-                line = input.readUTF(); 
-                System.out.println(line); 
-            } 
-            catch (IOException e) { 
-
-                e.printStackTrace(); 
-            }
-    	
-		System.out.println("thread done");
-		//read.start();
 	}
 		
 	public static void main(String args[]) {

@@ -13,7 +13,7 @@ public class Server{
 	static Vector<ServerThread> clientList;
 	private int counter = 0; //counts our clients
 	
-	public static String exitWord = "Over"; //project specifically mentioned to close with .exit but if
+	public static String exitWord = ".exit"; //project specifically mentioned to close with .exit but if
 	//we don't need that we can change it to be more intuitive
 	//it's static so I can reference it whereever
 	
@@ -28,12 +28,12 @@ public class Server{
 			while(clientList.size() < 100) { //search for more clients as long as we aren't above max capacity
 				//we can raise the number of max clients if we want
 			
-				System.out.println("Waiting for a client ...");
+				//System.out.println("Waiting for a client ...");
 			
 				socket = server.accept();	//Call this method and only accept the connection when
 											//port # is valid. If not throws an exception. 
 				
-				System.out.println("Client accepted");
+				System.out.println("<<NEW CLIENT ACCEPTED>>");
 			
 				
 				// Store buffered incoming data
@@ -52,28 +52,6 @@ public class Server{
 			
 				thread.start();
 			}
-				// Store input to print it out
-				//String line = "";
-			
-			
-			
-			// close the connection when typing Over into the client's Console
-			//This bit rehomed to ServerThread
-			/*while (!line.equals(exitWord)) {
-				
-				try {
-					// Store 'in' value
-					line = in.readUTF();
-					
-					// We will modify the println to send data to other client
-					System.out.println(line);
-				}
-				catch(IOException i) {
-					
-					System.out.println(i);
-				}
-				
-			}*/
 			
 		}
 		catch(IOException i) {

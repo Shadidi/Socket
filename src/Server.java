@@ -10,12 +10,15 @@ public class Server{
 	private DataInputStream in = null;
 	private DataOutputStream out = null;
 	
+	List<String> listOfClientNames = new ArrayList<String>();
+	
+	
 	static Vector<ServerThread> clientList;
 	private int counter = 0; //counts our clients
 	
 	public static String exitWord = ".exit"; //project specifically mentioned to close with .exit but if
 	//we don't need that we can change it to be more intuitive
-	//it's static so I can reference it whereever
+	//it's static so I can reference it where-ever
 	
 	public Server(int port){
 		Vector<ServerThread> clientList = new Vector<ServerThread>();
@@ -34,7 +37,7 @@ public class Server{
 											//port # is valid. If not throws an exception. 
 				
 				System.out.println("<<NEW CLIENT ACCEPTED>>");
-			
+				
 				
 				// Store buffered incoming data
 				in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -44,13 +47,16 @@ public class Server{
 				
 				ServerThread newClient = new ServerThread(socket, counter, in, out);
 				
-				
 				Thread thread = new Thread(newClient);
 				if(clientList != null) {
 					clientList.add(newClient);
+					
+					counter++;
 				}
-			
+				System.out.println("List of connected users: " + listOfClientNames.toString());
 				thread.start();
+				listOfClientNames.add(newClient.name);
+				
 			}
 			
 		}

@@ -9,13 +9,14 @@ public class Client{
 	private DataOutputStream out = null;
 	private String username = "";
 	private Scanner scan;
+	private boolean isConnected = false; //To close socket when disconnect.
 
 	
 	
 	public Client(String address, int port) {
 		
 		try {
-			
+			isConnected = !isConnected; // now client is connected so true.
 			System.out.println("Enter your name: ");	//if they enter nothing they get represented by their IP
 			username = "[" + address + "]";
 			
@@ -25,6 +26,7 @@ public class Client{
 			if (!name.equals("")) {
 				username = "[" + name + "]";
 			}
+			
 			//InetAddress ip = InetAddress.getByName("localhost"); gets your IP address if you want to use that later
 			socket = new Socket (address, port); //ask name first, THEN connect so the first line said isn't the username
 			
@@ -32,6 +34,7 @@ public class Client{
 			
 			input = new DataInputStream(socket.getInputStream()); 
 			out = new DataOutputStream(socket.getOutputStream()); // sends out client's input
+			out.writeUTF(username);
 			out.writeUTF("<<" + username + " HAS JOINED THE CHAT>>"); //This is sent to nobody, but server needs a message before it accepts more clients
 		
 		}
@@ -95,15 +98,21 @@ public class Client{
         }); 
 		line = "";
 		send.start();
-    	read.start();
+		if (!isConnected){ //If client didn't disconnect then read line.
+			read.start();
+		}
     	
+    	
+	}
+	public String getClientName() {
+		return username;
 	}
 		
 	public static void main(String args[]) {
         // start the client
 		// Client client2 = new Client 
 		
-		Client client = new Client ("127.0.0.1", 5000); // Definitely change ip address but add more stuff maybe.
+		Client client = new Client ("127.0.0.1", 5000); 
 	}	// First try on local host for them to talk to each other then extend to over
 		// the real network.
 

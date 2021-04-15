@@ -44,7 +44,6 @@ public class ServerThread implements Runnable{
 		try {
 			System.out.println("\t left the server\n");
 			in.close();
-			out.close();
 			socket.close();
 			connect = false;
 		} catch (IOException e) {

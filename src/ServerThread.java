@@ -8,37 +8,31 @@ public class ServerThread implements Runnable{
 	private DataOutputStream out = null;
 	private int clientNumber = 0;
 	public String name = "";
+	public boolean connect = true;
 	
-	public ServerThread(Socket s, int num, DataInputStream i, DataOutputStream o) {
+	public ServerThread(Socket s, int num, DataInputStream i, DataOutputStream o, String n) {
 		socket = s;
 		clientNumber = num;
 		in = i;
 		out = o;	
+		name = n;
+	}
+	
+	public boolean getConnect() {
+		return connect;
 	}
 	
     public void run() {
-    	try {
-			name = in.readUTF();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
+    	
         String line = "";
         while (!line.equals(Server.exitWord)) {
-        		//System.out.println("Open"); //This is just a debugging message to check if the server is running
 			try {
-					// Store 'in' value
 				line = in.readUTF();
 				if (!line.contains(Server.exitWord)) {
+					out.writeUTF(line);
 					System.out.println(line);
 				}
 				
-//				out.writeUTF(line);
-				
-				
-				/*for (ServerThread client : Server.clientList){ 
-					client.out.writeUTF(line);
-				}*/
-					
 					
 			}
 			catch(IOException i) {
@@ -48,10 +42,11 @@ public class ServerThread implements Runnable{
        	} 
         
 		try {
-			System.out.println("has left the server");
+			System.out.println("\t left the server\n");
 			in.close();
 			out.close();
 			socket.close();
+			connect = false;
 		} catch (IOException e) {
 			
 			System.out.println(e);

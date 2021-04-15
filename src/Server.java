@@ -42,20 +42,27 @@ public class Server{
 				// Store buffered incoming data
 				in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 				out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-//				out.writeUTF("");
-//				in.readUTF();
 				
-				ServerThread newClient = new ServerThread(socket, counter, in, out);
+				ServerThread newClient = new ServerThread(socket, counter, in, out, in.readUTF());
 				
 				Thread thread = new Thread(newClient);
 				if(clientList != null) {
 					clientList.add(newClient);
-					
+					listOfClientNames.add(newClient.name);
 					counter++;
+					
+					for (int x = 0; x < clientList.size(); x++){ 
+						ServerThread client = clientList.get(x);
+						if(client.getConnect() == false) {
+							clientList.remove(client);
+							listOfClientNames.remove(client.name);
+						}
+						
+					}
 				}
+				
 				System.out.println("List of connected users: " + listOfClientNames.toString());
 				thread.start();
-				listOfClientNames.add(newClient.name);
 				
 			}
 			

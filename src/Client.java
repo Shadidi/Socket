@@ -18,13 +18,13 @@ public class Client{
 		try {
 			isConnected = !isConnected; // now client is connected so true.
 			System.out.println("Enter your name: ");	//if they enter nothing they get represented by their IP
-			username = "[" + address + "]";
+			username = address;
 			
 			scan = new Scanner(System.in); //the scanner to take our input
 
 			String name = scan.nextLine();
 			if (!name.equals("")) {
-				username = "[" + name + "]";
+				username = name;
 			}
 			
 			//InetAddress ip = InetAddress.getByName("localhost"); gets your IP address if you want to use that later
@@ -34,8 +34,8 @@ public class Client{
 			
 			input = new DataInputStream(socket.getInputStream()); 
 			out = new DataOutputStream(socket.getOutputStream()); // sends out client's input
-			out.writeUTF(username);
-			out.writeUTF("<<" + username + " HAS JOINED THE CHAT>>"); //This is sent to nobody, but server needs a message before it accepts more clients
+			out.writeUTF(username);//This is sent to nobody, but server needs a message before it accepts more clients
+			out.writeUTF("<<" + username + " HAS JOINED THE CHAT>>"); 
 		
 		}
 			
@@ -76,7 +76,7 @@ public class Client{
             	while (!line.equals(Server.exitWord)) {
         			try {
 	        				line = scan.nextLine();
-	        				out.writeUTF(username); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
+	        				out.writeUTF("[" + username + "]"); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
 	        				out.writeUTF(line);
         			}
         			catch(IOException i) {

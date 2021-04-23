@@ -8,8 +8,8 @@ public class Client{
 	private DataInputStream input = null;
 	private DataOutputStream out = null;
 	private String username = "";
-	private Scanner scan;
-	private boolean isConnected = false; //To close socket when disconnect.
+	private Scanner scan; //This takes our client's input
+	private boolean isConnected = false; //To close socket when disconnecting.
 
 	
 	
@@ -27,15 +27,13 @@ public class Client{
 				username = name;
 			}
 			
-			//InetAddress ip = InetAddress.getByName("localhost"); gets your IP address if you want to use that later
 			socket = new Socket (address, port); //ask name first, THEN connect so the first line said isn't the username
 			
 			System.out.println("Connected");
 			
 			input = new DataInputStream(socket.getInputStream()); 
 			out = new DataOutputStream(socket.getOutputStream()); // sends out client's input
-			out.writeUTF(username);//This is sent to nobody, but server needs a message before it accepts more clients
-			out.writeUTF("<<" + username + " HAS JOINED THE CHAT>>"); 
+			out.writeUTF(username);//This is "sent" to nobody, but server needs a message to know what the client's name is before it accepts more
 		
 		}
 			
@@ -45,8 +43,6 @@ public class Client{
 		catch(IOException i) {
 			System.out.println(i);
 		}
-		
-		String line = "";
 		
 	
 		Thread read = new Thread(new Runnable()  { 
@@ -73,11 +69,10 @@ public class Client{
             public void run() { 
             	String line = "";
             	
-            	while (!line.equals(Server.exitWord)) {
+            	while (!line.equals(".exit")) {
         			try {
 	        				line = scan.nextLine();
-	        				out.writeUTF("[" + username + "]"); //This format is because because Server checks the last UTF message sent and flips out if it sees a name
-	        				out.writeUTF(line);
+	        				out.writeUTF(line); 
         			}
         			catch(IOException i) {
         				System.out.println(i);
@@ -95,25 +90,21 @@ public class Client{
         			System.out.println(i);
         		}
             } 
-        }); 
-		line = "";
+        });
 		send.start();
 		if (!isConnected){ //If client didn't disconnect then read line.
 			read.start();
 		}
-    	
-    	
 	}
 	public String getClientName() {
 		return username;
 	}
 		
+	
 	public static void main(String args[]) {
         // start the client
-		// Client client2 = new Client 
 		
-		Client client = new Client ("127.0.0.1", 5000); 
-	}	// First try on local host for them to talk to each other then extend to over
-		// the real network.
+		Client client = new Client ("127.0.0.1", 5000); //The address can be replaced
+	}
 
 }

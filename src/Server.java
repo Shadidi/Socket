@@ -12,13 +12,10 @@ public class Server{
 	
 	List<String> listOfClientNames = new ArrayList<String>();
 	
-	
 	static Vector<ServerThread> clientList;
-	private int counter = 0; //counts our clients
+	private int counter = 0; //counts total clients to ever join. This can get high as long as clients disconnect before we reach the cap.
 	
-	public static String exitWord = ".exit"; //project specifically mentioned to close with .exit but if
-	//we don't need that we can change it to be more intuitive
-	//it's static so I can reference it where-ever
+	public static String exitWord = ".exit"; //it's static so I can reference it in ServerThread
 	
 	public Server(int port){
 		Vector<ServerThread> clientList = new Vector<ServerThread>();
@@ -28,10 +25,8 @@ public class Server{
 			System.out.println("Server started");
 			
 			
-			while(clientList.size() < 100) { //search for more clients as long as we aren't above max capacity
+			while(clientList.size() <= 100) { //search for more clients as long as we aren't above max capacity
 				//we can raise the number of max clients if we want
-			
-				//System.out.println("Waiting for a client ...");
 			
 				socket = server.accept();	//Call this method and only accept the connection when
 											//port # is valid. If not throws an exception. 
@@ -43,13 +38,23 @@ public class Server{
 				in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 				out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 				
-				ServerThread newClient = new ServerThread(socket, counter, in, out, in.readUTF());
+				String newName = in.readUTF();
+				
+				for (int x = 0; x < clientList.size(); x++){ 
+					ServerThread client = clientList.get(x);
+					if(client.name.equals(newName)) {
+						newName += counter;
+					}
+				}
+				
+				ServerThread newClient = new ServerThread(socket, counter, in, out, newName);
 				
 				Thread thread = new Thread(newClient);
 				if(clientList != null) {
 					clientList.add(newClient);
 					listOfClientNames.add(newClient.name);
-					counter++;
+					counter++; //This never goes down so clients cant all connect with the same name, have 1 disconnect, and another get on with the same name
+					//which leads to the same make
 					
 					for (int x = 0; x < clientList.size(); x++){ 
 						ServerThread client = clientList.get(x);
@@ -57,7 +62,6 @@ public class Server{
 							clientList.remove(client);
 							listOfClientNames.remove(client.name);
 						}
-						
 					}
 				}
 				
@@ -65,7 +69,7 @@ public class Server{
 				thread.start();
 				
 			}
-			
+			System.out.println("Server Full! No more clients can join at this time. Thank you.");
 		}
 		catch(IOException i) {
 			System.out.println(i);
@@ -79,5 +83,4 @@ public class Server{
 		Server server = new Server(5000); //port number doesn't have to be 5000
 		
 	}
-	
-}
+}	
